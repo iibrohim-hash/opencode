@@ -15,19 +15,22 @@ interface SelectProviderModelInfo {
     id: string
     model: string
     disabled?: boolean
-    weight: number
-    priority: number
+    weight?: number
+    priority?: number
     budgetPriority?: number
     tpmLimit?: number
     tpsGoal?: string
+    [key: string]: unknown
   }>
   byokProvider?: string
   fallbackProvider?: string
+  [key: string]: unknown
 }
 
 interface SelectProviderAuthInfo {
   provider?: { credentials?: unknown } | null
   workspaceID?: string
+  [key: string]: unknown
 }
 
 export interface SelectProviderParams {
@@ -47,7 +50,7 @@ export interface SelectProviderParams {
         prefer: (providerId: string, priority: number) => boolean
       }
     | undefined
-  t: (key: string, params?: Record<string, string | number>) => string
+  t: (key: any, params?: Record<string, string | number>) => string
 }
 
 export function selectProvider(params: SelectProviderParams) {

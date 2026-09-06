@@ -1,4 +1,3 @@
-import type { ZenData } from "@opencode-ai/console-core/model.js"
 import { ModelError } from "./error"
 import { anthropicHelper } from "./provider/anthropic"
 import { googleHelper } from "./provider/google"
@@ -12,7 +11,7 @@ export type RetryOptions = {
 
 export interface SelectProviderParams {
   reqModel: string
-  zenData: Awaited<ReturnType<typeof ZenData.list>>
+  zenData: any
   authInfo: any
   modelInfo: any
   stickyId: string
@@ -50,35 +49,35 @@ export function selectProvider(params: SelectProviderParams) {
 
   const modelProvider = (() => {
     if (authInfo?.provider?.credentials) {
-      return modelInfo.providers.find((provider) => provider.id === modelInfo.byokProvider)
+      return modelInfo.providers.find((provider: any) => provider.id === modelInfo.byokProvider)
     }
 
-    let allProviders = modelInfo.providers.filter((provider) => !provider.disabled)
+    let allProviders = modelInfo.providers.filter((provider: any) => !provider.disabled)
     if (trialProviders) {
-      allProviders = allProviders.map((provider) => ({
+      allProviders = allProviders.map((provider: any) => ({
         ...provider,
         priority: trialProviders.includes(provider.id) ? 0 : provider.priority,
       }))
     }
 
-    const fallbackProvider = allProviders.find((provider) => provider.id === modelInfo.fallbackProvider)
+    const fallbackProvider = allProviders.find((provider: any) => provider.id === modelInfo.fallbackProvider)
     if (retry.retryCount === MAX_FAILOVER_RETRIES) return fallbackProvider
 
     let topPriority = Infinity
     const providers = allProviders
-      .filter((provider) => provider.weight !== 0)
-      .filter((provider) => !retry.excludeProviders.includes(provider.id))
-      .filter((provider) => {
+      .filter((provider: any) => provider.weight !== 0)
+      .filter((provider: any) => !retry.excludeProviders.includes(provider.id))
+      .filter((provider: any) => {
         if (provider.budgetPriority === undefined) return true
         if (!providerBudget) return true
         return providerBudget.qualify(provider.id, provider.budgetPriority)
       })
-      .filter((provider) => {
+      .filter((provider: any) => {
         if (!provider.tpmLimit) return true
         const usage = modelTpmLimits?.[`${provider.id}/${provider.model}`] ?? 0
         return usage < provider.tpmLimit * 1_000_000
       })
-      .filter((provider) => {
+      .filter((provider: any) => {
         if (!provider.tpsGoal) return true
         const tps = modelTpsLimits?.[`${provider.id}/${provider.model}/${provider.tpsGoal}`] ?? {
           qualify: 0,
@@ -87,12 +86,12 @@ export function selectProvider(params: SelectProviderParams) {
         const isLowTps = tps.qualify + tps.unqualify > 10 && tps.qualify < tps.unqualify
         return !isLowTps
       })
-      .map((provider) => {
+      .map((provider: any) => {
         topPriority = Math.min(topPriority, provider.priority)
         return provider
       })
-      .filter((p) => p.priority <= topPriority)
-      .flatMap((provider) => Array<typeof provider>(provider.weight).fill(provider))
+      .filter((p: any) => p.priority <= topPriority)
+      .flatMap((provider: any) => Array(provider.weight).fill(provider))
 
     let h = 0
     const l = stickyId.length
@@ -103,7 +102,7 @@ export function selectProvider(params: SelectProviderParams) {
     const provider = providers[index || 0] ?? fallbackProvider
 
     if (!stickyProviderId) return provider
-    const stickProvider = allProviders.find((provider) => provider.id === stickyProviderId)
+    const stickProvider = allProviders.find((provider: any) => provider.id === stickyProviderId)
     if (!stickProvider) return provider
 
     const preferBudgetProvider =

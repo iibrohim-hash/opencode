@@ -239,7 +239,7 @@ export async function handler(
                 if (authInfo?.workspaceID) headers.set(k, authInfo.workspaceID.replace("wrk_", "org_"))
                 return
               }
-              headers.set(k, v)
+              headers.set(k, v as string)
             })
             headers.delete("host")
             headers.delete("content-length")

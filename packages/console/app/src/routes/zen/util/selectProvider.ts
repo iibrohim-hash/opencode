@@ -10,34 +10,11 @@ export type RetryOptions = {
   retryCount: number
 }
 
-interface SelectProviderModelInfo {
-  providers: Array<{
-    id: string
-    model: string
-    disabled?: boolean
-    weight?: number
-    priority?: number
-    budgetPriority?: number
-    tpmLimit?: number
-    tpsGoal?: string
-    [key: string]: unknown
-  }>
-  byokProvider?: string
-  fallbackProvider?: string
-  [key: string]: unknown
-}
-
-interface SelectProviderAuthInfo {
-  provider?: { credentials?: unknown } | null
-  workspaceID?: string
-  [key: string]: unknown
-}
-
 export interface SelectProviderParams {
   reqModel: string
   zenData: Awaited<ReturnType<typeof ZenData.list>>
-  authInfo: SelectProviderAuthInfo | undefined
-  modelInfo: SelectProviderModelInfo
+  authInfo: any
+  modelInfo: any
   stickyId: string
   trialProviders: string[] | undefined
   retry: RetryOptions

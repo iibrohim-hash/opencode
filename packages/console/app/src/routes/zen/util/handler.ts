@@ -572,24 +572,40 @@ export async function handler(
     return { id: modelId, ...modelData }
   }
 
-  function selectProvider(
-    reqModel: string,
-    zenData: ZenData,
-    authInfo: AuthInfo,
-    modelInfo: ModelInfo,
-    stickyId: string,
-    trialProviders: string[] | undefined,
-    retry: RetryOptions,
-    stickyProviderId: string | undefined,
-    modelTpmLimits: Record<string, number> | undefined,
-    modelTpsLimits: Record<string, { qualify: number; unqualify: number }> | undefined,
+  interface SelectProviderParams {
+    reqModel: string
+    zenData: ZenData
+    authInfo: AuthInfo
+    modelInfo: ModelInfo
+    stickyId: string
+    trialProviders: string[] | undefined
+    retry: RetryOptions
+    stickyProviderId: string | undefined
+    modelTpmLimits: Record<string, number> | undefined
+    modelTpsLimits: Record<string, { qualify: number; unqualify: number }> | undefined
     providerBudget:
       | {
           qualify: (providerId: string, priority: number) => boolean
           prefer: (providerId: string, priority: number) => boolean
         }
-      | undefined,
-  ) {
+      | undefined
+  }
+
+  function selectProvider(params: SelectProviderParams) {
+    const {
+      reqModel,
+      zenData,
+      authInfo,
+      modelInfo,
+      stickyId,
+      trialProviders,
+      retry,
+      stickyProviderId,
+      modelTpmLimits,
+      modelTpsLimits,
+      providerBudget,
+    } = params
+
     const modelProvider = (() => {
       // Byok is top priority b/c if user set their own API key, we should use it
       // instead of using the sticky provider for the same session
